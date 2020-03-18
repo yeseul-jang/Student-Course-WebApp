@@ -4,6 +4,13 @@ var router = express.Router();
 
 module.exports = function(app)
 {
+    //signIn / signOut
+    app.post('/signin', students.authenticate);
+    app.get('/read_cookie', students.isSignedIn);
+    app.get('/signout', students.signout);
+    app.get('/welcome',students.welcome);
+
+    // Related to Student
     app.get('/students',students.list);
     app.route('/students/:studentId')
     .get(students.read)
@@ -11,4 +18,6 @@ module.exports = function(app)
     app.param('studentId', students.studentByID);
 
     app.post('/', students.createStudent);
+
+
 }
