@@ -14,6 +14,8 @@ module.exports = function(app)
     app.get('/students',students.list);
     app.route('/students/:studentId')
     .get(students.read)
+    .put(students.update)
+    .delete(students.delete)
     
     app.param('studentId', students.studentByID);
 

@@ -20,6 +20,24 @@ exports.createStudent = function (req, res, next) {
         }
     });
 };
+exports.update = function(req, res, next) {
+    console.log(req.body);
+    Student.findByIdAndUpdate(req.student.id, req.body, function (err, student) {
+      if (err) {
+        console.log(err);
+        return next(err);
+      }
+      res.json(student);
+    });
+};
+
+exports.delete = function(req, res, next) {
+    Student.findByIdAndRemove(req.student.id, req.body, function (err, student) {
+      if (err) return next(err);
+      console.log("Success!");
+      res.json(student);
+    });
+};
 
 exports.list = function (req, res, next) {
     // Use the 'Student' instance's 'find' method to retrieve a new student document
