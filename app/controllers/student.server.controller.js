@@ -5,8 +5,7 @@ const config = require('../../config/config');
 const jwtExpirySeconds = 300;
 const jwtKey =config.secretKey;
 
-exports.createStudent = function (req, res, next) {
-  
+exports.createStudent = function (req, res, next) {  
     var student = new Student(req.body); //get data from ejs page and attaches them to the model
 
     student.save(function (err) {
@@ -40,6 +39,7 @@ exports.delete = function(req, res, next) {
 };
 
 exports.list = function (req, res, next) {
+	console.log(">>>>>> 131243124");
     // Use the 'Student' instance's 'find' method to retrieve a new student document
     Student.find({}, function (err, students) {
         if (err) {
@@ -56,6 +56,7 @@ exports.read = function(req, res) {
 };
 
 exports.studentByID = function (req, res, next, id) {
+	console.log("studentByID >>>");
 	// Use the 'student' static 'findOne' method to retrieve a specific student
 	Student.findOne({
         _id: id
@@ -66,7 +67,7 @@ exports.studentByID = function (req, res, next, id) {
 		} else {
 			// Set the 'req.student' property
             req.student = student;
-            console.log(student);
+            console.log("student >>>", student);
 			// Call the next middleware
 			next();
 		}
@@ -90,7 +91,7 @@ exports.authenticate = function(req, res, next) {
 			if(bcrypt.compareSync(password, student.password)) {
 				// Create a new token with the student id in the payload
   				// and which expires 300 seconds after issue
-				const token = jwt.sign({ studentNumber: student.studentNumber }, jwtKey, 
+				const token = jwt.sign({ id: student._id, studentNumber: student.studentNumber }, jwtKey, 
 					{algorithm: 'HS256', expiresIn: jwtExpirySeconds });
 				console.log('token:', token)
 				// set the cookie as the token string, with a similar max age as the token
