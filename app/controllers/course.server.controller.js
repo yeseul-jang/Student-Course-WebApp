@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 const Course = mongoose.model('Course');
 const Student = require('mongoose').model('Student');
+const jwt = require('jsonwebtoken');
+const config = require('../../config/config');
+const jwtExpirySeconds = 300;
+const jwtKey =config.secretKey;
 
 function getErrorMessage(err) {
     if (err.errors) {
@@ -32,7 +36,7 @@ exports.create = function (req, res) {
 
 
     }).then(function () {
-        course.student = req.id
+        course.creator = req.id
         console.log('req.student._id', req.id);
 
         course.save((err) => {
@@ -98,20 +102,50 @@ exports.courseByID = function (req, res, next, id) {
 };
 //
 exports.read = function (req, res) {
-    res.status(200).json(req.course);
+    console.log("READ >>>>> ");
+
+    const token = req.cookies.token;
+	console.log(token);
+	// if the cookie is not set, return 'auth'
+	if (!token) {
+	  return res.send({ screen: 'auth' }).end();
+	}
+	var payload;
+	try {
+	  // Parse the JWT string and store the result in `payload`.
+	  // Note that we are passing the key in this method as well. This method will throw an error
+	  // if the token is invalid (if it has expired according to the expiry time we set on sign in),
+	  // or if the signature does not match
+	  payload = jwt.verify(token, jwtKey)
+	} catch (e) {
+	  if (e instanceof jwt.JsonWebTokenError) {
+		// the JWT is unauthorized, return a 401 error
+		return res.status(401).end()
+	  }
+	  // otherwise, return a bad request error
+	  return res.status(400).end()
+    }
+    
+    console.log("session ID >>>>> ", payload.id);
+    req.course.sessionId = payload.id;
+    console.log("req.course >>>>> ", req.course);
+
+    res.status(200).json({
+        course: req.course,
+        sessionId: payload.id
+    });
 };
 
 
 //The hasAuthorization() middleware uses the req.course and req.student objects
 //to verify that the current user is the student of the current course
 exports.hasAuthorization = function (req, res, next) {
-    console.log('in hasAuthorization - student: ', req.course.student);
+    console.log('in hasAuthorization - student: ', req.course.creator);
     console.log('in hasAuthorization- : ', req.id);
 
-    if (req.course.student != req.id) {
-        return res.status(403).send({
-            message: 'student is not authorized'
-        });
+    if (req.course.creator != req.id) {
+        var message = 'student is not authorized';
+        return res.json(message);
     }else {
         next();
     }

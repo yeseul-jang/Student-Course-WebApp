@@ -12,7 +12,12 @@ const CourseSchema = new Schema({
     studentList: [{
         type: Schema.Types.ObjectId,
         ref: 'Student'
-    }]
+    }],
+
+    creator: {
+        type: Schema.Types.ObjectId,
+        ref: 'Student'
+    }
 });
 //
 mongoose.model('Course', CourseSchema);
