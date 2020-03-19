@@ -56,7 +56,6 @@ exports.read = function(req, res) {
 };
 
 exports.studentByID = function (req, res, next, id) {
-	console.log("studentByID >>>");
 	// Use the 'student' static 'findOne' method to retrieve a specific student
 	Student.findOne({
         _id: id
