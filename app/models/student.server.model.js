@@ -8,16 +8,10 @@ const Schema = mongoose.Schema;
 // Define a new 'StudentSchema'
 var StudentSchema = new Schema({
     studentNumber: String,
-
-	password: {
-		type: String,
-		// Validate the 'password' value length
-		validate: [
-			(password) => password && password.length > 7,
-			'Password should be longer'
-		]
+	password: String,
+    firstName: {
+       type: String,
     },
-    firstName: String,
     lastName:String,
     address:String,
     city:String,
