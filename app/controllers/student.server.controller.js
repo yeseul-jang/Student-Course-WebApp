@@ -39,7 +39,6 @@ exports.delete = function(req, res, next) {
 };
 
 exports.list = function (req, res, next) {
-	console.log(">>>>>> 131243124");
     // Use the 'Student' instance's 'find' method to retrieve a new student document
     Student.find({}, function (err, students) {
         if (err) {

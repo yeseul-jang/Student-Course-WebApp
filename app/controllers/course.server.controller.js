@@ -81,14 +81,6 @@ exports.list = function (req, res) {
 };
 //
 exports.courseByID = function (req, res, next, id) {
-    // Course.findById(id).populate('student', 'firstName lastName fullName').exec((err, course) => {
-    //     if (err) return next(err);
-    //     if (!course) return next(new Error('Failed to load course '
-    //         + id));
-    //     req.course = course;
-    //     console.log('in courseById:', req.course)
-    //     next();
-    // });
     Course.findOne({
         _id: id
 	}, (err, course) => {
@@ -131,4 +123,82 @@ exports.delete = function(req, res, next) {
       console.log("Success!");
       res.json(course);
     });
+};
+
+//
+exports.courseByStudentID = function (req, res, next, studentId2) {
+    console.log(">>>>>>> courseByStudentID ", studentId2);
+    
+    //find the student then its comments using Promise mechanism of Mongoose Student.
+    Student.findOne({ _id: studentId2 }, (err, student) => {
+        if (err) { 
+            console.log('Student do not exist !!');
+            return getErrorMessage(err); 
+        }
+    }).then(function () {
+        //find the posts from this author Comment.
+        Course.find({ studentList: studentId2 }, (err, courses) => {
+            if (err) { 
+                console.log('Course finding err !!');
+
+                return getErrorMessage(err); 
+            } else {
+                console.log('>>>> courses ', courses);
+
+                res.status(200).json(courses);
+            }
+
+        });
+    });
+};
+
+//
+exports.readStudentCourseList = function (req, res) {
+    res.status(200).json(req.courses);
+};
+
+exports.addCourse = function (req, res) {
+    message = '';
+
+    Course.findById(req.course._id, (err, course) => {
+		if (err) {
+			// Call the next middleware with an error message
+			return next(err);
+		} else {
+            // check student already add it or not
+            if(course.studentList.indexOf(req.id) > -1) {
+                // exist
+                message = 'You already added this course!';
+                res.status(200).json(message);
+            }else {
+                course.studentList.push(req.id);
+                course.save(function(err) {
+                    if(err) return res.send(err);
+    
+                    message = 'You successfully added this course!';
+                    res.status(200).json(message);
+                });
+            }
+
+                    
+		}
+	});
+};
+
+exports.readStudentList = function (req, res) {
+    res.status(200).json(req.students);
+};
+
+exports.studentByCourseId = function (req, res, next, courseId2) {
+    console.log(">>>>>>> studentByCourseId ", courseId2);
+
+    Course.findOne({ _id: courseId2 }).populate('studentList').exec((err, students) => {
+        if (err) { 
+            console.log('Student do not exist !!');
+            return getErrorMessage(err); 
+        } else {
+            console.log("Populated students " + students.studentList);
+			res.status(200).json(students.studentList);
+		}
+    })
 };

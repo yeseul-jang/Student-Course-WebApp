@@ -3,16 +3,16 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 //define a new CommentSchema
 const CourseSchema = new Schema({
- //
- courseCode: String,
- courseName: String,
- section: String,
- semester: String,
+    //
+    courseCode: String,
+    courseName: String,
+    section: String,
+    semester: String,
 
- student: {
- type: Schema.Types.ObjectId,
- ref: 'Student'
- }
+    studentList: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Student'
+    }]
 });
 //
 mongoose.model('Course', CourseSchema);
