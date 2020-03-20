@@ -95,7 +95,7 @@ exports.authenticate = function(req, res, next) {
 				// set the cookie as the token string, with a similar max age as the token
 				// here, the max age is in milliseconds
 				res.cookie('token', token, { maxAge: jwtExpirySeconds * 1000,httpOnly: true});
-				res.status(200).send({ screen: student.studentNumber });
+				res.status(200).send({ screen: student.studentNumber, fullName: student.fullName });
 
 				//call the next middleware
 				next()
